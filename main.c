@@ -57,6 +57,9 @@ int main(int argc, char *argv[])
 
         case EXIT:
             info("exit state");
+            digitalToAnalog(digital_image, output_image);
+            write_bitmap(output_image, argv[2]);
+
             run=FALSE;
             break;
 
