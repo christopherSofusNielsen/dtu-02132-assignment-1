@@ -8,7 +8,7 @@
 			"args": [
 				"-g",
 				"${workspaceFolder}\\*.c",
-				"${workspaceFolder}\\libs\\*.c",
+				"${workspaceFolder}\\utilities\\*.c",
 				"-o",
 				"${workspaceFolder}\\main.exe"
 			],
