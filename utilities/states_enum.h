@@ -5,7 +5,7 @@ typedef enum{
     INIT,
     LOAD_FILE,
     RGB_TO_GRAY,
-    ANALOG_TO_DIGITAL,
+    GRAY_TO_BW,
     EXIT
 }STATES;
 

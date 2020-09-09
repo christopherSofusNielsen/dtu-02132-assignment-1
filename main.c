@@ -6,12 +6,12 @@
 #include "utilities/types.h"
 #include "utilities/logger.h"
 
-#include "models/rgbToGrayscale.h"
+#include "models/imageConverter.h"
 
 //variabels
 UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH];
+UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH];
 
 int main(int argc, char *argv[])
 {
@@ -44,8 +44,14 @@ int main(int argc, char *argv[])
 
         case RGB_TO_GRAY:
             info("rgb to gray scale state");
-            rgbToGrayscale(input_image, grayscale_image);
+            rgbToGrayscale(input_image, digital_image);
 
+            nextState=GRAY_TO_BW;
+            break;
+
+        case GRAY_TO_BW:
+            info("gray to bw state");
+            grayscaleToBlackWhite(digital_image);
             nextState=EXIT;
             break;
 
