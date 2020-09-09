@@ -6,9 +6,9 @@
             "label": "C/C++: gcc.exe build active file",
             "command": "C:\\MinGW\\bin\\gcc.exe",
             "args": [
-                "-g",
                 "${workspaceFolder}\\*.c",
                 "${workspaceFolder}\\utilities\\*.c",
+                "${workspaceFolder}\\models\\*.c",
                 "-o",
                 "${workspaceFolder}\\main.exe"
             ],

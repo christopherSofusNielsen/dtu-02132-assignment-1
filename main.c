@@ -4,9 +4,18 @@
 #include "utilities/cbmp.h"
 #include "utilities/states_enum.h"
 #include "utilities/types.h"
+#include "utilities/logger.h"
 
-int main(int argc, char const *argv[])
+#include "models/rgbToGrayscale.h"
+
+//variabels
+UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH];
+
+int main(int argc, char *argv[])
 {
+    //State vars
     STATES state, nextState=INIT;
     BOOL run=TRUE;
 
@@ -16,17 +25,37 @@ int main(int argc, char const *argv[])
         switch (state)
         {
         case INIT:
-            printf("Init");
+            info("init state");
+            if (argc != 3)
+            {
+                fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
+                nextState=EXIT;
+            }else{
+                nextState=LOAD_FILE;
+            }
+            break;
+
+        case LOAD_FILE:
+            info("load file state");
+            read_bitmap(argv[1], input_image);
+
+            nextState=RGB_TO_GRAY;
+            break;
+
+        case RGB_TO_GRAY:
+            info("rgb to gray scale state");
+            rgbToGrayscale(input_image, grayscale_image);
+
             nextState=EXIT;
             break;
 
         case EXIT:
-            printf("Exit");
+            info("exit state");
             run=FALSE;
             break;
 
         default:
-            printf("Error");
+            error("state machine error - undefined case");
             run=FALSE;
             break;
         }
