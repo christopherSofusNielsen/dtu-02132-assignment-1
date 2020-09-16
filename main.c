@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "utilities/cbmp.h"
 #include "utilities/states_enum.h"
@@ -14,6 +15,10 @@
 UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH];
+UCHAR temp_digital_image[BMP_WIDTH][BMP_HEIGTH];
+unsigned long int whitePixels=0;
+int testCnt=5;
+
 
 int main(int argc, char *argv[])
 {
@@ -54,12 +59,20 @@ int main(int argc, char *argv[])
         case GRAY_TO_BW:
             info("gray to bw state");
             grayscaleToBlackWhite(digital_image);
-            nextState=EXIT;
+            nextState=ERODE_IMAGE;
             break;
 
         case ERODE_IMAGE:
+            whitePixels=0;
+            whitePixels=erodeImage(digital_image, temp_digital_image);
+            printf("White pixels: %d\n", whitePixels);
+            memcpy(digital_image, temp_digital_image, sizeof(temp_digital_image));
+            if(--testCnt==0){
+                nextState=EXIT;
+            }else{
+                nextState=ERODE_IMAGE;
+            }
 
-            
             break;
 
         case EXIT:

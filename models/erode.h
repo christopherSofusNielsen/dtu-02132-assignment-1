@@ -4,7 +4,7 @@
 #include "../utilities/cbmp.h"
 #include "../utilities/types.h"
 
-unsigned int erodeImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH], UCHAR erodeImage[BMP_WIDTH][BMP_HEIGTH]);
+unsigned long int erodeImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH], UCHAR erodeImage[BMP_WIDTH][BMP_HEIGTH]);
 
 
 

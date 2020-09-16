@@ -7,6 +7,7 @@ typedef enum{
     RGB_TO_GRAY,
     GRAY_TO_BW,
     ERODE_IMAGE,
+    CHECK_ENRODED_IMAGE,
     EXIT
 }STATES;
 
