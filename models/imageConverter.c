@@ -110,3 +110,9 @@ void printPoints(POINT points[POINTS_LENGTH], int length){
         printf("X: %d\tY: %d\n", points[i].x, points[i].y);
     }
 }
+
+void printResult(int nPoints){
+    printf("---------------------------------\n");
+    printf("Number of points: %d\n", nPoints);
+    printf("---------------------------------\n\n");
+}

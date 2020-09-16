@@ -33,7 +33,8 @@ int main(int argc, char *argv[])
         switch (state)
         {
         case INIT:
-            info("init state");
+            //info("init state");
+            info("Program start!");
             if (argc != 3)
             {
                 fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -44,21 +45,21 @@ int main(int argc, char *argv[])
             break;
 
         case LOAD_FILE:
-            info("load file state");
+            //info("load file state");
             read_bitmap(argv[1], input_image);
 
             nextState=RGB_TO_GRAY;
             break;
 
         case RGB_TO_GRAY:
-            info("rgb to gray scale state");
+            //info("rgb to gray scale state");
             rgbToGrayscale(input_image, digital_image);
 
             nextState=GRAY_TO_BW;
             break;
 
         case GRAY_TO_BW:
-            info("gray to bw state");
+            //info("gray to bw state");
             grayscaleToBlackWhite(digital_image);
             nextState=ERODE_IMAGE;
             break;
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
         case ERODE_IMAGE:
             whitePixels=0;
             whitePixels=erodeImage(digital_image, temp_digital_image);
-            printf("White pixels: %d\n", whitePixels);
+            //printf("White pixels: %d\n", whitePixels);
             memcpy(digital_image, temp_digital_image, sizeof(temp_digital_image));
             nextState=INIT_ANALYSIS;
             break;
@@ -80,7 +81,8 @@ int main(int argc, char *argv[])
             break;
 
         case MARK_POINTS:
-            printPoints(points, pointIndex);
+            //printPoints(points, pointIndex);
+            printResult(pointIndex);
             addMarkersToAnalogImage(input_image, points, pointIndex);
             nextState=EXIT;
             break;
@@ -91,7 +93,7 @@ int main(int argc, char *argv[])
             break;
 
         case EXIT:
-            info("exit state");
+            //info("Program done!");
             //digitalToAnalog(digital_image, output_image);
             write_bitmap(input_image, argv[2]);
 

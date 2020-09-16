@@ -23,7 +23,7 @@ void detectCells(UCHAR image[BMP_WIDTH][BMP_HEIGTH], POINT points[POINTS_LENGTH]
             }   
         }   
     }
-    printf("Cells counted: %d\n", (*pointIndex));
+    //printf("Cells counted: %d\n", (*pointIndex));
 }
 
 //true if found cell
