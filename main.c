@@ -7,6 +7,8 @@
 #include "utilities/logger.h"
 
 #include "models/imageConverter.h"
+#include "models/erode.h"
+
 
 //variabels
 UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
@@ -53,6 +55,11 @@ int main(int argc, char *argv[])
             info("gray to bw state");
             grayscaleToBlackWhite(digital_image);
             nextState=EXIT;
+            break;
+
+        case ERODE_IMAGE:
+
+            
             break;
 
         case EXIT:
