@@ -20,12 +20,16 @@ UCHAR temp_digital_image[BMP_WIDTH][BMP_HEIGTH];
 unsigned long int whitePixels=0;
 int pointIndex=0; 
 POINT points[POINTS_LENGTH];
+int erodeCnt=0;
 
 int main(int argc, char *argv[])
 {
     //State vars
     STATES state, nextState=INIT;
     BOOL run=TRUE;
+
+    //debug
+    char str[30]={'\0'};
 
     while (run)
     {
@@ -60,14 +64,14 @@ int main(int argc, char *argv[])
 
         case GRAY_TO_BW:
             //info("gray to bw state");
-            grayscaleToBlackWhite(digital_image);
+            //grayscaleToBlackWhite(digital_image);
+            grayscaleToBlackWhiteOtsu(digital_image);
             nextState=ERODE_IMAGE;
             break;
 
         case ERODE_IMAGE:
             whitePixels=0;
             whitePixels=erodeImage(digital_image, temp_digital_image);
-            //printf("White pixels: %d\n", whitePixels);
             memcpy(digital_image, temp_digital_image, sizeof(temp_digital_image));
             nextState=INIT_ANALYSIS;
             break;
@@ -76,8 +80,16 @@ int main(int argc, char *argv[])
             if(whitePixels==0){
                 nextState=MARK_POINTS;
             }else{
-                nextState=DETECT_CELLS;
+                nextState=PRINT_ERODE_IMAGE;
+                //nextState=DETECT_CELLS;
             }
+            break;
+
+        case PRINT_ERODE_IMAGE:
+            sprintf(str, "erode_%d.bmp", erodeCnt++);
+            digitalToAnalog(digital_image, output_image);
+            write_bitmap(output_image, str);
+            nextState=DETECT_CELLS;
             break;
 
         case MARK_POINTS:

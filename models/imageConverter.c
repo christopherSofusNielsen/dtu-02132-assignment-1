@@ -5,6 +5,7 @@
 //locals
 UCHAR getMean(UCHAR rbgValues[]);
 UCHAR compareThreshold(UCHAR val);
+UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih);
 
 void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
 UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]){
@@ -25,9 +26,23 @@ void grayscaleToBlackWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH]){
     {
         for (int ih = 0; ih < BMP_HEIGTH; ih++)
         {
+            //image[iw][ih]=compareThreshold2(image, iw, ih);
+            
             image[iw][ih]=compareThreshold(image[iw][ih]);
         }
     }
+}
+
+void grayscaleToBlackWhiteOtsu(UCHAR image[BMP_WIDTH][BMP_HEIGTH]){
+    UCHAR newImage[BMP_WIDTH][BMP_HEIGTH];
+    for (int iw = 0; iw < BMP_WIDTH; iw++)
+    {
+        for (int ih = 0; ih < BMP_HEIGTH; ih++)
+        {
+            newImage[iw][ih]=compareThreshold2(image, iw, ih);
+        }
+    }
+    memcpy(image, newImage, sizeof(newImage));
 }
 
 void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH], 
@@ -102,6 +117,31 @@ UCHAR getMean(UCHAR rbgValues[]){
 UCHAR compareThreshold(UCHAR val){
     return val<GRAYSCALE_THRESHOLD?0:255;
 }
+
+UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih){
+    if(iw==0 || iw==BMP_WIDTH-1 || ih==0 || ih==BMP_HEIGTH){
+        return compareThreshold(image[iw][ih]);
+    }
+
+    int sum=0;
+
+    sum+=image[iw][ih];
+    sum+=image[iw][ih-1];
+    sum+=image[iw][ih+1];
+    sum+=image[iw-1][ih];
+    sum+=image[iw+1][ih];
+
+    //bigger form
+    sum+=image[iw-1][ih-1];
+    sum+=image[iw-1][ih+1];
+    sum+=image[iw+1][ih-1];
+    sum+=image[iw+1][ih+1];
+
+    sum=sum/9;
+    return compareThreshold(sum);
+
+}
+
 
 void printPoints(POINT points[POINTS_LENGTH], int length){
     printf("\n\nList of points:\n\n");

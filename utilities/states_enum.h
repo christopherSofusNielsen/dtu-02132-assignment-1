@@ -11,6 +11,7 @@ typedef enum{
     INIT_ANALYSIS,
     DETECT_CELLS,
     MARK_POINTS,
+    PRINT_ERODE_IMAGE,
     EXIT
 }STATES;
 
