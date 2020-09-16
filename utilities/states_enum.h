@@ -8,6 +8,8 @@ typedef enum{
     GRAY_TO_BW,
     ERODE_IMAGE,
     CHECK_ENRODED_IMAGE,
+    INIT_ANALYSIS,
+    DETECT_CELLS,
     EXIT
 }STATES;
 

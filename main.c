@@ -9,6 +9,7 @@
 
 #include "models/imageConverter.h"
 #include "models/erode.h"
+#include "models/detectCells.h"
 
 
 //variabels
@@ -17,8 +18,8 @@ UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH];
 UCHAR temp_digital_image[BMP_WIDTH][BMP_HEIGTH];
 unsigned long int whitePixels=0;
-int testCnt=5;
-
+int pointIndex=0; 
+POINT points[POINTS_LENGTH];
 
 int main(int argc, char *argv[])
 {
@@ -67,12 +68,22 @@ int main(int argc, char *argv[])
             whitePixels=erodeImage(digital_image, temp_digital_image);
             printf("White pixels: %d\n", whitePixels);
             memcpy(digital_image, temp_digital_image, sizeof(temp_digital_image));
-            if(--testCnt==0){
+            nextState=INIT_ANALYSIS;
+            break;
+
+        case INIT_ANALYSIS:
+            if(whitePixels==0){
                 nextState=EXIT;
             }else{
-                nextState=ERODE_IMAGE;
+                nextState=DETECT_CELLS;
             }
+            break;
 
+            
+
+        case DETECT_CELLS:
+            detectCells(digital_image, points, &pointIndex);
+            nextState=ERODE_IMAGE;
             break;
 
         case EXIT:
