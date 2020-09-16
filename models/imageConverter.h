@@ -10,4 +10,7 @@ void grayscaleToBlackWhite(UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]);
 
 void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH], UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]);
 
+void printPoints(POINT points[POINTS_LENGTH], int length);
+
+void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], POINT pnts[POINTS_LENGTH], int nPoints);
 #endif // IMAGE_CONVERTER_H

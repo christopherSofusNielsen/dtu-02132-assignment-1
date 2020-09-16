@@ -73,13 +73,17 @@ int main(int argc, char *argv[])
 
         case INIT_ANALYSIS:
             if(whitePixels==0){
-                nextState=EXIT;
+                nextState=MARK_POINTS;
             }else{
                 nextState=DETECT_CELLS;
             }
             break;
 
-            
+        case MARK_POINTS:
+            printPoints(points, pointIndex);
+            addMarkersToAnalogImage(input_image, points, pointIndex);
+            nextState=EXIT;
+            break;
 
         case DETECT_CELLS:
             detectCells(digital_image, points, &pointIndex);
@@ -88,8 +92,8 @@ int main(int argc, char *argv[])
 
         case EXIT:
             info("exit state");
-            digitalToAnalog(digital_image, output_image);
-            write_bitmap(output_image, argv[2]);
+            //digitalToAnalog(digital_image, output_image);
+            write_bitmap(input_image, argv[2]);
 
             run=FALSE;
             break;

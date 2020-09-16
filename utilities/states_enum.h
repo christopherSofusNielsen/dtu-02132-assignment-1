@@ -10,6 +10,7 @@ typedef enum{
     CHECK_ENRODED_IMAGE,
     INIT_ANALYSIS,
     DETECT_CELLS,
+    MARK_POINTS,
     EXIT
 }STATES;
 

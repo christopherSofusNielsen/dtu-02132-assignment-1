@@ -7,6 +7,8 @@
 
 #define POINTS_LENGTH 400
 
+#define CROSS_R_SIZE 6
+
 
 
 #endif // PARAMETERS_H

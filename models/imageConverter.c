@@ -46,6 +46,39 @@ UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
     }
 }
 
+void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], POINT pnts[POINTS_LENGTH], int nPoints){
+    for (int i = 0; i < nPoints; i++)
+    {
+        int x=pnts[i].x;
+        int y=pnts[i].y;
+        //draw row
+        int rowStart=(x-CROSS_R_SIZE<0)?0:x-CROSS_R_SIZE;
+        int rowEnd=(x+CROSS_R_SIZE>BMP_WIDTH-1)?BMP_WIDTH-1:x+CROSS_R_SIZE;
+        
+        for (int iw = rowStart; iw <= rowEnd; iw++)
+        {
+            image[iw][y][0]=255;
+            image[iw][y][1]=0;
+            image[iw][y][2]=0;
+        }
+
+        //draw col
+        int colStart=(y-CROSS_R_SIZE<0)?0:y-CROSS_R_SIZE;
+        int colEnd=(y+CROSS_R_SIZE>BMP_HEIGTH-1)?BMP_HEIGTH-1:y+CROSS_R_SIZE;
+
+        for (int ih = colStart; ih <= colEnd; ih++)
+        {
+            image[x][ih][0]=255;
+            image[x][ih][1]=0;
+            image[x][ih][2]=0;
+        }
+        
+        
+    }
+    
+}
+
+
 
 UCHAR getMean(UCHAR rbgValues[]){
     int sum=0;
@@ -60,4 +93,12 @@ UCHAR getMean(UCHAR rbgValues[]){
 
 UCHAR compareThreshold(UCHAR val){
     return val<GRAYSCALE_THRESHOLD?0:255;
+}
+
+void printPoints(POINT points[POINTS_LENGTH], int length){
+    printf("\n\nList of points:\n\n");
+    for (int i = 0; i < length; i++)
+    {
+        printf("X: %d\tY: %d\n", points[i].x, points[i].y);
+    }
 }
