@@ -1,7 +1,8 @@
 #ifndef STATES_ENUM_H
-#define STATES_ENUM_H   
+#define STATES_ENUM_H
 
-typedef enum{
+typedef enum
+{
     INIT,
     LOAD_FILE,
     RGB_TO_GRAY,
@@ -12,8 +13,8 @@ typedef enum{
     DETECT_CELLS,
     MARK_POINTS,
     PRINT_ERODE_IMAGE,
+    FITLER_POINTS,
     EXIT
-}STATES;
-
+} STATES;
 
 #endif // STATES_ENUM_H
