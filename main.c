@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
         case INIT:
             //info("init state");
             info("Program start!");
-            printf("%s", argv[1]);
             if (argc < 3)
             {
                 fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -67,8 +66,8 @@ int main(int argc, char *argv[])
 
         case GRAY_TO_BW:
             //info("gray to bw state");
-            //grayscaleToBlackWhite(digital_image);
-            grayscaleToBlackWhiteOtsu(digital_image);
+            grayscaleToBlackWhite(digital_image);
+            //grayscaleToBlackWhiteOtsu(digital_image);
             nextState = ERODE_IMAGE;
             break;
 
@@ -82,8 +81,8 @@ int main(int argc, char *argv[])
         case INIT_ANALYSIS:
             if (whitePixels == 0)
             {
-                nextState = FITLER_POINTS;
-                //nextState = MARK_POINTS;
+                //nextState = FITLER_POINTS;
+                nextState = MARK_POINTS;
             }
             else
             {
