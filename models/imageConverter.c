@@ -14,9 +14,8 @@ UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]){
     {
         for (int ih = 0; ih < BMP_HEIGTH; ih++)
         {
-            UCHAR mean=getMean(image_array[iw][ih]);
-            grayscale_image[iw][ih]=mean;
-        }
+            grayscale_image[iw][ih]=getMean(image_array[iw][ih]);
+        }        
     }
     
 }
@@ -28,7 +27,8 @@ void grayscaleToBlackWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH]){
         {
             //image[iw][ih]=compareThreshold2(image, iw, ih);
             
-            image[iw][ih]=compareThreshold(image[iw][ih]);
+            //image[iw][ih]=compareThreshold(image[iw][ih]);
+           image[iw][ih]=image[iw][ih]<GRAYSCALE_THRESHOLD?0:255;
         }
     }
 }
@@ -106,12 +106,14 @@ void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], P
 UCHAR getMean(UCHAR rbgValues[]){
     int sum=0;
 
-    for (UCHAR i = 0; i < 3; i++)
-    {
-        sum+=rbgValues[i];    
-    }
+    /*
+    This is faster than initialize a for loop
+    */
+    sum+=rbgValues[0];    
+    sum+=rbgValues[1];    
+    sum+=rbgValues[2];    
 
-    return sum/3;
+    return sum>>2;
 }
 
 UCHAR compareThreshold(UCHAR val){
