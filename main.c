@@ -18,15 +18,15 @@ UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
 
-// UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
-// UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
+UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
+UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
 
 
-UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
-UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
+// UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
+// UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
 
-UCHAR (*digi_buffer_0)[BMP_HEIGTH] = binary_image_0;
-UCHAR (*digi_buffer_1)[BMP_HEIGTH] = binary_image_1;
+// UCHAR (*digi_buffer_0)[BMP_HEIGTH] = binary_image_0;
+// UCHAR (*digi_buffer_1)[BMP_HEIGTH] = binary_image_1;
 
 unsigned long int whitePixels = 0;
 int pointIndex = 0;
@@ -75,40 +75,29 @@ int main(int argc, char *argv[])
         case LOAD_FILE:
             //info("load file state");
             read_bitmap(argv[1], input_image);
-             start = clock();
+            start = clock();
             nextState = RGB_TO_GRAY;
             break;
 
         case RGB_TO_GRAY:
-            //info("rgb to gray scale state");
-            // t0=clock();
             rgbToGrayscale(input_image, digi_buffer_0);
-            // t1=clock();
-            // cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
-            // printf("RGB to gray time: %f s\n",cpu_time_used );
             nextState = GRAY_TO_BW;
             break;
 
         case GRAY_TO_BW:
-            //info("gray to bw state");
-            //  t0=clock();
-             grayscaleToBlackWhite(digi_buffer_0);
-            // t1=clock();
-            // cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
-            // printf("gray to bw time: %f s\n",cpu_time_used );
-            //grayscaleToBlackWhiteOtsu(digital_image);
+            grayscaleToBlackWhite(digi_buffer_0);
             nextState = ERODE_IMAGE;
             break;
 
         case ERODE_IMAGE:
-            // t0=clock();
+            t0=clock();
             whitePixels = 0;
             whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            swap(&digi_buffer_0, &digi_buffer_1);
-            // t1=clock();
-            // cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
-            //printf("Erode time: %f s\n",cpu_time_used );
-            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            //swap(&digi_buffer_0, &digi_buffer_1);
+            memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            t1=clock();
+            cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
+            printf("Erode time: %f s\n",cpu_time_used );
             nextState = INIT_ANALYSIS;
             break;
 
@@ -120,8 +109,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                nextState = PRINT_ERODE_IMAGE;
-                //nextState=DETECT_CELLS;
+                //nextState = PRINT_ERODE_IMAGE;
+                nextState=DETECT_CELLS;
             }
             break;
 
@@ -134,32 +123,27 @@ int main(int argc, char *argv[])
             break;
 
         case PRINT_ERODE_IMAGE:
-            //sprintf(str, "erode_%d.bmp", erodeCnt++);
+            sprintf(str, "erode_%d.bmp", erodeCnt++);
             digitalToAnalog(digi_buffer_0, output_image);
-            //write_bitmap(output_image, str);
+            write_bitmap(output_image, str);
             nextState = DETECT_CELLS;
             break;
 
         case MARK_POINTS:
-            //info("Mark points");
-            //printPoints(points, pointIndex);
             addMarkersToAnalogImage(input_image, points, pointIndex);
-            t1=clock();
             nextState = EXIT;
             break;
 
         case DETECT_CELLS:
-            //t0=clock();
+            t0=clock();
             detectCells(digi_buffer_0, points, &pointIndex);
-            //t1=clock();
-            //cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
+            t1=clock();
+            cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
             //printf("Detect time: %f s\n",cpu_time_used );
             nextState = ERODE_IMAGE;
             break;
 
         case EXIT:
-            //info("Program done!");
-            //digitalToAnalog(digital_image, output_image);
             end=clock();
             cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
             printf("Total time: %f s\n",cpu_time_used );
