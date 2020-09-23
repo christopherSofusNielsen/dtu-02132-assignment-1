@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
             }
             else
             {
-                nextState = PRINT_ERODE_IMAGE;
-                //nextState=DETECT_CELLS;
+                //nextState = PRINT_ERODE_IMAGE;
+                nextState=DETECT_CELLS;
             }
             break;
 

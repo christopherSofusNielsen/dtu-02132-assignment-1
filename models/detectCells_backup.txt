@@ -2,8 +2,6 @@
 
 #include <stdio.h>
 
-#define BOUNDARY_ERROR_MARGIN 0.0
-
 BOOL searchForCell(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih);
 BOOL cheackRowForWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int row, int colStart, int colEnd);
 BOOL cheackColForWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int col, int rowStart, int rowEnd);
@@ -76,18 +74,13 @@ BOOL cheackRowForWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int row, int colStart
     colStart=(colStart<0)?0:colStart;
     colEnd=(colEnd>=BMP_WIDTH)?BMP_WIDTH-1:colEnd;
 
-    int nPixels=0, whitePixels=0;
     
     for (int iw = colStart; iw <= colEnd; iw++)
     {
-        nPixels++;
         if(image[iw][row]>0){
-            whitePixels++;
+            return TRUE;
         }
     }
-
-    float relativeWhite=(float)whitePixels/(float)nPixels;
-    if(relativeWhite>BOUNDARY_ERROR_MARGIN) return TRUE;
     return FALSE;
 }
 
@@ -100,19 +93,12 @@ BOOL cheackColForWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int col, int rowStart
     rowStart=(rowStart<0)?0:rowStart;
     rowEnd=(rowEnd>=BMP_HEIGTH)?BMP_HEIGTH-1:rowEnd;
 
-    int nPixels=0, whitePixels=0;
-
     for (int ih = rowStart; ih <= rowEnd; ih++)
     {
-        nPixels++;
         if(image[col][ih]>0){
-            whitePixels++;
+            return TRUE;
         }
     }
-
-    float relativeWhite=(float)whitePixels/(float)nPixels;
-    //printf("Float %f", relativeWhite);
-    if(relativeWhite>BOUNDARY_ERROR_MARGIN) return TRUE;
     return FALSE;
 }
 
