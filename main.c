@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "utilities/cbmp.h"
 #include "utilities/states_enum.h"
@@ -22,6 +23,10 @@ int pointIndex = 0;
 POINT points[POINTS_LENGTH];
 int erodeCnt = 0;
 
+//debug
+
+
+
 int main(int argc, char *argv[])
 {
     //State vars
@@ -31,14 +36,18 @@ int main(int argc, char *argv[])
     //debug
     char str[30] = {'\0'};
 
+    //Time
+    clock_t start, end;
+    double cpu_time_used;
+
     while (run)
     {
         state = nextState;
         switch (state)
         {
         case INIT:
-            //info("init state");
             info("Program start!");
+            start = clock();
             if (argc < 3)
             {
                 fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -60,7 +69,6 @@ int main(int argc, char *argv[])
         case RGB_TO_GRAY:
             //info("rgb to gray scale state");
             rgbToGrayscale(input_image, digital_image);
-
             nextState = GRAY_TO_BW;
             break;
 
@@ -107,9 +115,8 @@ int main(int argc, char *argv[])
             break;
 
         case MARK_POINTS:
-            info("Mark points");
+            //info("Mark points");
             //printPoints(points, pointIndex);
-            printResult(pointIndex);
             addMarkersToAnalogImage(input_image, points, pointIndex);
             nextState = EXIT;
             break;
@@ -122,6 +129,10 @@ int main(int argc, char *argv[])
         case EXIT:
             //info("Program done!");
             //digitalToAnalog(digital_image, output_image);
+            end=clock();
+            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+            printf("Total time: %f ms\n",cpu_time_used );
+            printResult(pointIndex);
             write_bitmap(input_image, argv[2]);
 
             run = FALSE;
