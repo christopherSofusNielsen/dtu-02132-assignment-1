@@ -7,6 +7,7 @@
 #include "utilities/states_enum.h"
 #include "utilities/types.h"
 #include "utilities/logger.h"
+#include "utilities/list.h"
 
 #include "models/imageConverter.h"
 #include "models/erode.h"
@@ -46,6 +47,9 @@ int main(int argc, char *argv[])
     //State vars
     STATES state, nextState = INIT;
     BOOL run = TRUE;
+
+    //list
+    node_t *points_head = NULL;
 
     //debug
     char str[30] = {'\0'};
@@ -93,8 +97,8 @@ int main(int argc, char *argv[])
             t0 = clock();
             whitePixels = 0;
             whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            swap(&digi_buffer_0, &digi_buffer_1);
-            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            //swap(&digi_buffer_0, &digi_buffer_1);
+            memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
             t1 = clock();
             cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
             printf("Erode time: %f s\n", cpu_time_used);
@@ -130,13 +134,14 @@ int main(int argc, char *argv[])
             break;
 
         case MARK_POINTS:
-            addMarkersToAnalogImage(input_image, points, pointIndex);
+            //addMarkersToAnalogImage(input_image, points, pointIndex);
+            addMarkersToAnalogImage(input_image, &points_head);
             nextState = EXIT;
             break;
 
         case DETECT_CELLS:
             t0 = clock();
-            detectCells(digi_buffer_0, points, &pointIndex);
+            detectCells(digi_buffer_0, &points_head);
             t1 = clock();
             cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
             //printf("Detect time: %f s\n",cpu_time_used );
@@ -147,7 +152,7 @@ int main(int argc, char *argv[])
             end = clock();
             cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
             printf("Total time: %f s\n", cpu_time_used);
-            printResult(pointIndex);
+            printPoints(&points_head);
             write_bitmap(input_image, argv[2]);
 
             run = FALSE;

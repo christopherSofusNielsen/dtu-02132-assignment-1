@@ -4,6 +4,7 @@
 #include "../utilities/types.h"
 #include "../utilities/parameters.h"
 #include <string.h>
+#include "../utilities/list.h"
 
 void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]);
 
@@ -13,10 +14,9 @@ void grayscaleToBlackWhiteOtsu(UCHAR image[BMP_WIDTH][BMP_HEIGTH]);
 
 void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH], UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]);
 
-void printPoints(POINT points[POINTS_LENGTH], int length);
+void printPoints(node_t **points_head);
 
-void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], POINT pnts[POINTS_LENGTH], int nPoints);
-
-void printResult(int nPoints);
+//void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], POINT pnts[POINTS_LENGTH], int nPoints);
+void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], node_t **points_head);
 
 #endif // IMAGE_CONVERTER_H
