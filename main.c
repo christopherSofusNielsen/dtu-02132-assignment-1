@@ -17,10 +17,8 @@
 UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
-
 UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
 UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
-
 
 // UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
 // UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
@@ -35,8 +33,10 @@ int erodeCnt = 0;
 
 //debug
 
-void swap(UCHAR (**a)[BMP_WIDTH], UCHAR (**b)[BMP_WIDTH]) {
-    UCHAR (*temp)[BMP_WIDTH] = *a;
+void swap(UCHAR (**a)[BMP_WIDTH], UCHAR (**b)[BMP_WIDTH])
+{
+    UCHAR(*temp)
+    [BMP_WIDTH] = *a;
     *a = *b;
     *b = temp;
 }
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     char str[30] = {'\0'};
 
     //Time
-    clock_t start, end,t0, t1;
+    clock_t start, end, t0, t1;
     double cpu_time_used;
 
     while (run)
@@ -90,14 +90,14 @@ int main(int argc, char *argv[])
             break;
 
         case ERODE_IMAGE:
-            t0=clock();
+            t0 = clock();
             whitePixels = 0;
             whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            //swap(&digi_buffer_0, &digi_buffer_1);
-            memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
-            t1=clock();
-            cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
-            printf("Erode time: %f s\n",cpu_time_used );
+            swap(&digi_buffer_0, &digi_buffer_1);
+            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            t1 = clock();
+            cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
+            printf("Erode time: %f s\n", cpu_time_used);
             nextState = INIT_ANALYSIS;
             break;
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
             else
             {
                 //nextState = PRINT_ERODE_IMAGE;
-                nextState=DETECT_CELLS;
+                nextState = DETECT_CELLS;
             }
             break;
 
@@ -135,18 +135,18 @@ int main(int argc, char *argv[])
             break;
 
         case DETECT_CELLS:
-            t0=clock();
+            t0 = clock();
             detectCells(digi_buffer_0, points, &pointIndex);
-            t1=clock();
-            cpu_time_used = ((double) (t1 - t0)) / CLOCKS_PER_SEC;
+            t1 = clock();
+            cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
             //printf("Detect time: %f s\n",cpu_time_used );
             nextState = ERODE_IMAGE;
             break;
 
         case EXIT:
-            end=clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-            printf("Total time: %f s\n",cpu_time_used );
+            end = clock();
+            cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+            printf("Total time: %f s\n", cpu_time_used);
             printResult(pointIndex);
             write_bitmap(input_image, argv[2]);
 
