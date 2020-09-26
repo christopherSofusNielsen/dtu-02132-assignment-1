@@ -1,3 +1,5 @@
+#define DEBUG 1
+#define STATE_TIME 1
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,23 +18,21 @@
 
 //variabels
 UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+
+//Only for debug
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+UCHAR erodeCnt = 0;
 
-UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
-UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
+// UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
+// UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
 
-// UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
-// UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
+UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
+UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
 
-// UCHAR (*digi_buffer_0)[BMP_HEIGTH] = binary_image_0;
-// UCHAR (*digi_buffer_1)[BMP_HEIGTH] = binary_image_1;
-
-unsigned long int whitePixels = 0;
-int pointIndex = 0;
-POINT points[POINTS_LENGTH];
-int erodeCnt = 0;
-
-//debug
+UCHAR (*digi_buffer_0)
+[BMP_HEIGTH] = binary_image_0;
+UCHAR (*digi_buffer_1)
+[BMP_HEIGTH] = binary_image_1;
 
 void swap(UCHAR (**a)[BMP_WIDTH], UCHAR (**b)[BMP_WIDTH])
 {
@@ -44,18 +44,18 @@ void swap(UCHAR (**a)[BMP_WIDTH], UCHAR (**b)[BMP_WIDTH])
 
 int main(int argc, char *argv[])
 {
-    //State vars
+
     STATES state, nextState = INIT;
     BOOL run = TRUE;
-
-    //list
     node_t *points_head = NULL;
+    unsigned long int whitePixels = 0;
 
     //debug
     char str[30] = {'\0'};
 
     //Time
-    clock_t start, end, t0, t1;
+    INIT_STATE_TIME;
+    clock_t start, end;
     double cpu_time_used;
 
     while (run)
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         switch (state)
         {
         case INIT:
-            info("Program start!");
+            LOG("Program start!");
             if (argc < 3)
             {
                 fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
             break;
 
         case LOAD_FILE:
-            //info("load file state");
             read_bitmap(argv[1], input_image);
             start = clock();
             nextState = RGB_TO_GRAY;
@@ -94,14 +93,12 @@ int main(int argc, char *argv[])
             break;
 
         case ERODE_IMAGE:
-            t0 = clock();
+            START_TIME;
             whitePixels = 0;
             whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            //swap(&digi_buffer_0, &digi_buffer_1);
-            memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
-            t1 = clock();
-            cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
-            printf("Erode time: %f s\n", cpu_time_used);
+            swap(&digi_buffer_0, &digi_buffer_1);
+            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            STOP_TIME("Erode time: %f s\n");
             nextState = INIT_ANALYSIS;
             break;
 
@@ -113,15 +110,13 @@ int main(int argc, char *argv[])
             }
             else
             {
-                //nextState = PRINT_ERODE_IMAGE;
                 nextState = DETECT_CELLS;
             }
             break;
 
         case FITLER_POINTS:
-            printf("Before points %d\n", pointIndex);
-            removeOverlappingCells(points, &pointIndex);
-            printf("After points %d\n", pointIndex);
+
+            //removeOverlappingCells(points, &pointIndex);
 
             nextState = MARK_POINTS;
             break;
@@ -134,17 +129,14 @@ int main(int argc, char *argv[])
             break;
 
         case MARK_POINTS:
-            //addMarkersToAnalogImage(input_image, points, pointIndex);
             addMarkersToAnalogImage(input_image, &points_head);
             nextState = EXIT;
             break;
 
         case DETECT_CELLS:
-            t0 = clock();
+            START_TIME;
             detectCells(digi_buffer_0, &points_head);
-            t1 = clock();
-            cpu_time_used = ((double)(t1 - t0)) / CLOCKS_PER_SEC;
-            //printf("Detect time: %f s\n",cpu_time_used );
+            STOP_TIME("Detect time: %f s\n");
             nextState = ERODE_IMAGE;
             break;
 
@@ -159,7 +151,7 @@ int main(int argc, char *argv[])
             break;
 
         default:
-            error("state machine error - undefined case");
+            LOG("state machine error - undefined case");
             run = FALSE;
             break;
         }

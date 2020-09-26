@@ -102,43 +102,6 @@ void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], n
     }
 }
 
-void _addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], POINT pnts[POINTS_LENGTH], int nPoints)
-{
-    for (int i = 0; i < nPoints; i++)
-    {
-        int x = pnts[i].x;
-        int y = pnts[i].y;
-
-        int yWidth = (y + 1 > BMP_HEIGTH - 1) ? y : y + 1;
-        int wHeigth = (x + 1 > BMP_WIDTH - 1) ? x : x + 1;
-
-        //draw row
-        int rowStart = (x - CROSS_R_SIZE < 0) ? 0 : x - CROSS_R_SIZE;
-        int rowEnd = (x + CROSS_R_SIZE > BMP_WIDTH - 1) ? BMP_WIDTH - 1 : x + CROSS_R_SIZE;
-
-        for (int iw = rowStart; iw <= rowEnd; iw++)
-        {
-            image[iw][y][0] = 255;
-            image[iw][y][1] = 0;
-            image[iw][y][2] = 0;
-            image[iw][yWidth][0] = 255;
-            image[iw][yWidth][1] = 0;
-            image[iw][yWidth][2] = 0;
-        }
-
-        //draw col
-        int colStart = (y - CROSS_R_SIZE < 0) ? 0 : y - CROSS_R_SIZE;
-        int colEnd = (y + CROSS_R_SIZE > BMP_HEIGTH - 1) ? BMP_HEIGTH - 1 : y + CROSS_R_SIZE;
-
-        for (int ih = colStart; ih <= colEnd; ih++)
-        {
-            image[x][ih][0] = 255;
-            image[x][ih][1] = 0;
-            image[x][ih][2] = 0;
-        }
-    }
-}
-
 UCHAR getMean(UCHAR rbgValues[])
 {
     int sum = 0;
