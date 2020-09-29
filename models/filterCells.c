@@ -1,79 +1,78 @@
 #include "filterCells.h"
 
-POINT combinePoints(POINT pnts[POINTS_LENGTH], int nPoints, int skipPoints[MAX_SKIP_POINTS], int *nSkipPnts, int index);
-BOOL hasValus(int skipPoints[MAX_SKIP_POINTS], int length, int val);
+void comparePoint(node_t **point);
+UCHAR comparePointToCircularBounds(int x0, int y0, int x, int y);
 
-void removeOverlappingCells(POINT pnts[POINTS_LENGTH], int *nPoints)
+void filterPoints(node_t **points_head)
 {
-    POINT *filteredPnts = malloc(sizeof(POINT) * POINTS_LENGTH);
-    int nFilteredPoints = 0;
-    int nSkipPnts = 0;
-    int skipPnts[MAX_SKIP_POINTS];
+    node_t *tmp = *points_head;
 
-    for (int i = 0; i < (*nPoints); i++)
+    while (tmp != NULL)
     {
-        if (hasValus(skipPnts, nSkipPnts, i))
-        {
-            //printf("Skipped index %d\n", i);
-            continue;
-        }
-
-        filteredPnts[i] = combinePoints(pnts, (*nPoints), skipPnts, &nSkipPnts, i);
-        nFilteredPoints++;
+        comparePoint(&tmp);
+        tmp = tmp->next;
     }
-
-    (*nPoints) = nFilteredPoints;
-    memcpy(pnts, filteredPnts, sizeof(POINT) * POINTS_LENGTH);
-    free(filteredPnts);
 }
 
-POINT combinePoints(POINT pnts[POINTS_LENGTH], int nPoints, int skipPoints[MAX_SKIP_POINTS], int *nSkipPnts, int index)
+void comparePoint(node_t **point)
 {
 
-    unsigned int xMin, xMax, yMin, yMax, xSum, ySum, cnt;
-    xSum = pnts[index].x;
-    ySum = pnts[index].y;
-    cnt = 1;
+    //calculate bounds
+    int x_min, x_max, y_min, y_max, x0, y0, x_sum = 0, y_sum = 0, nOverlaps = 0;
+    x0 = (*point)->x;
+    y0 = (*point)->y;
 
-    xMin = (pnts[index].x - MAX_OVERLAP_RADIUS < 0) ? 0 : pnts[index].x - MAX_OVERLAP_RADIUS;
-    xMax = (pnts[index].x + MAX_OVERLAP_RADIUS > BMP_WIDTH - 1) ? BMP_WIDTH - 1 : pnts[index].x + MAX_OVERLAP_RADIUS;
-    yMin = (pnts[index].y - MAX_OVERLAP_RADIUS < 0) ? 0 : pnts[index].y - MAX_OVERLAP_RADIUS;
-    yMax = (pnts[index].y + MAX_OVERLAP_RADIUS > BMP_HEIGTH - 1) ? BMP_HEIGTH - 1 : pnts[index].y + MAX_OVERLAP_RADIUS;
+    x_min = (x0 - RADIUS < 0) ? 0 : x0 - RADIUS;
+    x_max = (x0 + RADIUS > BMP_WIDTH_EDGE) ? BMP_WIDTH_EDGE : x0 + RADIUS;
+    y_min = (y0 - RADIUS < 0) ? 0 : y0 - RADIUS;
+    y_max = (y0 + RADIUS > BMP_HEIGTH_EDGE) ? BMP_HEIGTH_EDGE : y0 + RADIUS;
 
-    printf("xMin %d, xMax %d, yMin %d, yMax %d\n", xMin, xMax, yMin, yMax);
+    //Compare to the rest of the points
+    node_t *prev = *point;
+    node_t *tmp = (*point)->next;
 
-    for (int i = 0; i < nPoints; i++)
+    while (tmp != NULL)
     {
-        if (i == index)
+        int x = tmp->x;
+        int y = tmp->y;
+
+        if (x_min <= x && x <= x_max && y_min <= y && y <= y_max && comparePointToCircularBounds(x0, y0, x, y) != 0)
         {
-            continue;
+
+            nOverlaps++;
+            x_sum += x;
+            y_sum += y;
+
+            //compared cell is inside the box
+            prev->next = tmp->next;
+            free(tmp);
+            tmp = prev->next;
         }
-
-        int x = pnts[i].x, y = pnts[i].y;
-
-        if (x >= xMin && x <= xMax && y >= yMin && y <= yMax)
+        else
         {
-            //xSum += x;
-            //ySum += y;
-            skipPoints[(*nSkipPnts)++] = i;
-            cnt++;
-            //printf("Combined %d with %d\n", index, i);
+            prev = prev->next;
+            tmp = tmp->next;
         }
     }
 
-    //POINT p = {.x = xSum / cnt, .y = ySum / cnt};
-    POINT p = {.x = xSum, .y = ySum};
-    return p;
+    //Calculate the avrage for x & y the removed points and set the "orignal" point to that.
+    if (nOverlaps > 0)
+    {
+        nOverlaps++;
+        x_sum += x0;
+        y_sum += y0;
+
+        int x_new = x_sum / nOverlaps;
+        int y_new = y_sum / nOverlaps;
+
+        (*point)->x = x_new;
+        (*point)->y = y_new;
+    }
 }
 
-BOOL hasValus(int skipPoints[MAX_SKIP_POINTS], int length, int val)
+UCHAR comparePointToCircularBounds(int x0, int y0, int x, int y)
 {
-    for (int i = 0; i < length; i++)
-    {
-        if (skipPoints[i] == val)
-        {
-            return TRUE;
-        }
-    }
-    return FALSE;
+    double r = sqrt(pow((x0 - x), 2) + pow((y0 - y), 2));
+    return r <= (double)RADIUS;
+    ;
 }

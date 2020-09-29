@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         switch (state)
         {
         case INIT:
-            LOG("Program start!");
+            LOG("Program start!\n");
             if (argc < 3)
             {
                 fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
@@ -88,7 +88,8 @@ int main(int argc, char *argv[])
             break;
 
         case GRAY_TO_BW:
-            grayscaleToBlackWhite(digi_buffer_0);
+            //grayscaleToBlackWhite(digi_buffer_0);
+            grayscaleToBlackWhiteOtsu(digi_buffer_0);
             nextState = ERODE_IMAGE;
             break;
 
@@ -105,8 +106,8 @@ int main(int argc, char *argv[])
         case INIT_ANALYSIS:
             if (whitePixels == 0)
             {
-                //nextState = FITLER_POINTS;
-                nextState = MARK_POINTS;
+                nextState = FITLER_POINTS;
+                //nextState = MARK_POINTS;
             }
             else
             {
@@ -115,9 +116,7 @@ int main(int argc, char *argv[])
             break;
 
         case FITLER_POINTS:
-
-            //removeOverlappingCells(points, &pointIndex);
-
+            filterPoints(&points_head);
             nextState = MARK_POINTS;
             break;
 
@@ -144,14 +143,22 @@ int main(int argc, char *argv[])
             end = clock();
             cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
             printf("Total time: %f s\n", cpu_time_used);
-            printPoints(&points_head);
+
+            if (argc >= 4 && strcmp(argv[3], "ls") == 0)
+            {
+                printPoints(&points_head);
+            }
+            else
+            {
+                printResult(&points_head);
+            }
             write_bitmap(input_image, argv[2]);
 
             run = FALSE;
             break;
 
         default:
-            LOG("state machine error - undefined case");
+            LOG("state machine error - undefined case\n");
             run = FALSE;
             break;
         }

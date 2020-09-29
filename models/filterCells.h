@@ -4,12 +4,12 @@
 #include "../utilities/types.h"
 #include "../utilities/parameters.h"
 #include "../utilities/cbmp.h"
+#include "../utilities/list.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 
-#define MAX_SKIP_POINTS 400
-
-void removeOverlappingCells(POINT pnts[POINTS_LENGTH], int *nPoints);
+void filterPoints(node_t **points_head);
 
 #endif // FILTER_CELLS_H

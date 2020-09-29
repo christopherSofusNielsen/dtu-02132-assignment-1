@@ -10,4 +10,6 @@
 #define POINTS_LENGTH 3000
 #define CROSS_R_SIZE 8
 
+#define RADIUS 16 //14
+
 #endif // PARAMETERS_H

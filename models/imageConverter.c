@@ -6,6 +6,7 @@
 UCHAR getMean(UCHAR rbgValues[]);
 UCHAR compareThreshold(UCHAR val);
 UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih);
+void printNumberOfPoints(int nPoints);
 
 void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                     UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH])
@@ -130,7 +131,7 @@ UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
 
     int sum = 0;
 
-    sum += image[iw][ih];
+    //sum += image[iw][ih];
     sum += image[iw][ih - 1];
     sum += image[iw][ih + 1];
     sum += image[iw - 1][ih];
@@ -142,8 +143,14 @@ UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
     sum += image[iw + 1][ih - 1];
     sum += image[iw + 1][ih + 1];
 
-    sum = sum / 9;
-    return compareThreshold(sum);
+    int avr = sum / 8;
+
+    if (avr < 80 || avr > 150)
+    {
+        return compareThreshold(image[iw][ih]);
+    }
+
+    return image[iw][ih] <= avr ? 0 : 255;
 }
 
 void printPoints(node_t **points_head)
@@ -158,6 +165,25 @@ void printPoints(node_t **points_head)
     }
     printf("\n");
 
+    printf("---------------------------------\n");
+    printf("Number of points: %d\n", nPoints);
+    printf("---------------------------------\n\n");
+}
+
+void printResult(node_t **points_head)
+{
+    node_t *tmp = *points_head;
+    unsigned int nPoints = 0;
+    while (tmp != NULL)
+    {
+        tmp = tmp->next;
+        nPoints++;
+    }
+    printNumberOfPoints(nPoints);
+}
+
+void printNumberOfPoints(int nPoints)
+{
     printf("---------------------------------\n");
     printf("Number of points: %d\n", nPoints);
     printf("---------------------------------\n\n");
