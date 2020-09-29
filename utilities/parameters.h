@@ -1,15 +1,16 @@
 #if !defined(PARAMETERS_H)
 #define PARAMETERS_H
 
-//219 -> 110
-#define GRAYSCALE_THRESHOLD 120
-#define CELL_SEARCH_RADIUS 8
-#define CELL_SEARCH_RADIUS_START 7
-#define MAX_OVERLAP_RADIUS 10
+//basic gray to bw
+#define GRAYSCALE_THRESHOLD 120 //not used
 
-#define POINTS_LENGTH 3000
+//Detect box size
+#define CELL_DETECT_BOX_SIZE 7
+
+//Filter overlap
+#define RADIUS 16
+
+//Mark cells
 #define CROSS_R_SIZE 8
-
-#define RADIUS 16 //14
 
 #endif // PARAMETERS_H

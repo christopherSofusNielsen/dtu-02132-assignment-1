@@ -52,7 +52,7 @@ void detectCells(UCHAR image[BMP_WIDTH][BMP_HEIGTH], node_t **points_head)
 
 BOOL searchBox(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
 {
-    int radius = CELL_SEARCH_RADIUS_START;
+    int radius = CELL_DETECT_BOX_SIZE;
     if (cheackRowForWhite(image, ih - radius, iw - radius, iw + radius))
     {
         return FALSE;

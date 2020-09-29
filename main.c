@@ -107,7 +107,6 @@ int main(int argc, char *argv[])
             if (whitePixels == 0)
             {
                 nextState = FITLER_POINTS;
-                //nextState = MARK_POINTS;
             }
             else
             {
