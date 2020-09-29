@@ -1,10 +1,9 @@
-#define DEBUG 1
-#define STATE_TIME 1
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
+#include "utilities/parameters.h"
 #include "utilities/cbmp.h"
 #include "utilities/states_enum.h"
 #include "utilities/types.h"
@@ -50,10 +49,10 @@ int main(int argc, char *argv[])
     node_t *points_head = NULL;
     unsigned long int whitePixels = 0;
 
-    //debug
+    //Debug - eroded images
     char str[30] = {'\0'};
 
-    //Time
+    //Time control
     INIT_STATE_TIME;
     clock_t start, end;
     double cpu_time_used;
@@ -83,24 +82,17 @@ int main(int argc, char *argv[])
             break;
 
         case RGB_TO_GRAY:
+            START_TIME;
             rgbToGrayscale(input_image, digi_buffer_0);
+            STOP_TIME("\nRGB to grayscale time: %f s\n\n");
             nextState = GRAY_TO_BW;
             break;
 
         case GRAY_TO_BW:
-            //grayscaleToBlackWhite(digi_buffer_0);
-            grayscaleToBlackWhiteOtsu(digi_buffer_0);
-            nextState = ERODE_IMAGE;
-            break;
-
-        case ERODE_IMAGE:
             START_TIME;
-            whitePixels = 0;
-            whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            swap(&digi_buffer_0, &digi_buffer_1);
-            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
-            STOP_TIME("Erode time: %f s\n");
-            nextState = INIT_ANALYSIS;
+            grayscaleToBlackWhiteOtsu(digi_buffer_0);
+            STOP_TIME("Grayscale to black/white time: %f s\n\n");
+            nextState = ERODE_IMAGE;
             break;
 
         case INIT_ANALYSIS:
@@ -114,9 +106,35 @@ int main(int argc, char *argv[])
             }
             break;
 
+        case ERODE_IMAGE:
+            START_TIME;
+            whitePixels = 0;
+            whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
+            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            swap(&digi_buffer_0, &digi_buffer_1);
+            STOP_TIME("Erode time: %f s\n");
+            nextState = INIT_ANALYSIS;
+            break;
+
+        case DETECT_CELLS:
+            START_TIME;
+            detectCells(digi_buffer_0, &points_head);
+            STOP_TIME("Detect time: %f s\n\n");
+            nextState = ERODE_IMAGE;
+            break;
+
         case FITLER_POINTS:
+            START_TIME;
             filterPoints(&points_head);
+            STOP_TIME("\nFilter points: %f s\n\n");
             nextState = MARK_POINTS;
+            break;
+
+        case MARK_POINTS:
+            START_TIME;
+            addMarkersToAnalogImage(input_image, &points_head);
+            STOP_TIME("Mark points: %f s\n\n");
+            nextState = EXIT;
             break;
 
         case PRINT_ERODE_IMAGE:
@@ -126,22 +144,9 @@ int main(int argc, char *argv[])
             nextState = DETECT_CELLS;
             break;
 
-        case MARK_POINTS:
-            addMarkersToAnalogImage(input_image, &points_head);
-            nextState = EXIT;
-            break;
-
-        case DETECT_CELLS:
-            START_TIME;
-            detectCells(digi_buffer_0, &points_head);
-            STOP_TIME("Detect time: %f s\n");
-            nextState = ERODE_IMAGE;
-            break;
-
         case EXIT:
             end = clock();
             cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-            printf("Total time: %f s\n", cpu_time_used);
 
             if (argc >= 4 && strcmp(argv[3], "ls") == 0)
             {
@@ -151,6 +156,7 @@ int main(int argc, char *argv[])
             {
                 printResult(&points_head);
             }
+            printf("\nTotal time: %f s\n", cpu_time_used);
             write_bitmap(input_image, argv[2]);
 
             run = FALSE;
