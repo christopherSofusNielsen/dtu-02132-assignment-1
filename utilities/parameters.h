@@ -7,9 +7,9 @@
 #define STATE_TIME 1 //enable time analysis
 
 //basic gray to bw
-#define GRAYSCALE_THRESHOLD 100 //Static threshold - also used as fallback threshold
-#define OTSU_MIN 90             //set to zero for disabling otsu threshold
-#define OTSU_MAX 150            //set to zero for disabling otsu threshold
+#define GRAYSCALE_THRESHOLD 100  //Static threshold - also used as fallback threshold
+#define OTSU_MIN  90             //set to zero for disabling otsu threshold
+#define OTSU_MAX 150             //set to zero for disabling otsu threshold
 
 //x-0 (no otsu) best for easy
 //90-150 best for medium
