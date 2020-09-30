@@ -43,7 +43,7 @@ void comparePoint(node_t **point)
             x_sum += x;
             y_sum += y;
 
-            //compared cell is inside the box
+            //remove point from the list
             prev->next = tmp->next;
             free(tmp);
             tmp = prev->next;

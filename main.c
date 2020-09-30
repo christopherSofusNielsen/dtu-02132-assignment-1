@@ -95,7 +95,17 @@ int main(int argc, char *argv[])
             nextState = ERODE_IMAGE;
             break;
 
-        case INIT_ANALYSIS:
+        case ERODE_IMAGE:
+            START_TIME;
+            whitePixels = 0;
+            whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
+            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
+            swap(&digi_buffer_0, &digi_buffer_1);
+            STOP_TIME("Erode time: %f s\n");
+            nextState=CHECK_ERODED_IMAGE;
+            break;
+
+        case CHECK_ERODED_IMAGE:
             if (whitePixels == 0)
             {
                 nextState = FITLER_POINTS;
@@ -104,16 +114,6 @@ int main(int argc, char *argv[])
             {
                 nextState = DETECT_CELLS;
             }
-            break;
-
-        case ERODE_IMAGE:
-            START_TIME;
-            whitePixels = 0;
-            whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
-            swap(&digi_buffer_0, &digi_buffer_1);
-            STOP_TIME("Erode time: %f s\n");
-            nextState = INIT_ANALYSIS;
             break;
 
         case DETECT_CELLS:
