@@ -145,10 +145,8 @@ UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
 
     int avr = sum / 8;
 
-    if (avr < OTSU_MIN || avr >= OTSU_MAX)
-    {
-        return compareThreshold(image[iw][ih]);
-    }
+    avr=(avr < OTSU_MIN)?OTSU_MIN:avr;
+    avr=(avr >= OTSU_MAX)?OTSU_MAX:avr;
 
     return image[iw][ih] <= avr ? 0 : 255;
 }
