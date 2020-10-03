@@ -22,9 +22,6 @@ UCHAR input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 UCHAR erodeCnt = 0;
 
-// UCHAR digi_buffer_0[BMP_WIDTH][BMP_HEIGTH];
-// UCHAR digi_buffer_1[BMP_WIDTH][BMP_HEIGTH];
-
 UCHAR binary_image_0[BMP_WIDTH][BMP_HEIGTH];
 UCHAR binary_image_1[BMP_WIDTH][BMP_HEIGTH];
 
@@ -33,6 +30,7 @@ UCHAR (*digi_buffer_0)
 UCHAR (*digi_buffer_1)
 [BMP_HEIGTH] = binary_image_1;
 
+//Swap the pointers to the BW images
 void swap(UCHAR (**a)[BMP_WIDTH], UCHAR (**b)[BMP_WIDTH])
 {
     UCHAR(*temp)
@@ -97,12 +95,12 @@ int main(int argc, char *argv[])
 
         case ERODE_IMAGE:
             START_TIME;
+            //count number of white pixels, to know when the image is 100% eroded
             whitePixels = 0;
             whitePixels = erodeImage(digi_buffer_0, digi_buffer_1);
-            //memcpy(digi_buffer_0, digi_buffer_1, sizeof(digi_buffer_1));
             swap(&digi_buffer_0, &digi_buffer_1);
             STOP_TIME("Erode time: %f s\n");
-            nextState=CHECK_ERODED_IMAGE;
+            nextState = CHECK_ERODED_IMAGE;
             break;
 
         case CHECK_ERODED_IMAGE:

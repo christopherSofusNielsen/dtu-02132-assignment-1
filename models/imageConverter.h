@@ -8,8 +8,6 @@
 
 void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]);
 
-void grayscaleToBlackWhite(UCHAR grayscale_image[BMP_WIDTH][BMP_HEIGTH]);
-
 void grayscaleToBlackWhiteOtsu(UCHAR image[BMP_WIDTH][BMP_HEIGTH]);
 
 void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH], UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]);

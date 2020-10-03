@@ -7,10 +7,17 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef struct{
+typedef enum
+{
+    NEXT_BLACK,
+    BLACK,
+    WHITE
+} PIXEL_STATE;
+
+typedef struct
+{
     int x;
     int y;
-}POINT;
-
+} POINT;
 
 #endif

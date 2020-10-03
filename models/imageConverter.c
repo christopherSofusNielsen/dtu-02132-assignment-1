@@ -3,9 +3,8 @@
 #include <stdio.h>
 
 //locals
-UCHAR getMean(UCHAR rbgValues[]);
-UCHAR compareThreshold(UCHAR val);
-UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih);
+UCHAR compareStaticThreshold(UCHAR val);
+UCHAR compareDynamicThreshold(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih);
 void printNumberOfPoints(int nPoints);
 
 void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
@@ -16,21 +15,14 @@ void rgbToGrayscale(UCHAR image_array[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     {
         for (int ih = 0; ih < BMP_HEIGTH; ih++)
         {
-            grayscale_image[iw][ih] = getMean(image_array[iw][ih]);
-        }
-    }
-}
+            int sum = 0;
 
-void grayscaleToBlackWhite(UCHAR image[BMP_WIDTH][BMP_HEIGTH])
-{
-    for (int iw = 0; iw < BMP_WIDTH; iw++)
-    {
-        for (int ih = 0; ih < BMP_HEIGTH; ih++)
-        {
-            //image[iw][ih]=compareThreshold2(image, iw, ih);
+            //This is faster than initialize a for loop
+            sum += image_array[iw][ih][0];
+            sum += image_array[iw][ih][1];
+            sum += image_array[iw][ih][2];
 
-            //image[iw][ih]=compareThreshold(image[iw][ih]);
-            image[iw][ih] = image[iw][ih] < GRAYSCALE_THRESHOLD ? 0 : 255;
+            grayscale_image[iw][ih] = sum >> 2; //divide by 4
         }
     }
 }
@@ -42,28 +34,12 @@ void grayscaleToBlackWhiteOtsu(UCHAR image[BMP_WIDTH][BMP_HEIGTH])
     {
         for (int ih = 0; ih < BMP_HEIGTH; ih++)
         {
-            newImage[iw][ih] = compareThreshold2(image, iw, ih);
+            newImage[iw][ih] = compareDynamicThreshold(image, iw, ih);
         }
     }
     memcpy(image, newImage, sizeof(newImage));
 }
 
-void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH],
-                     UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
-{
-    for (int iw = 0; iw < BMP_WIDTH; iw++)
-    {
-        for (int ih = 0; ih < BMP_HEIGTH; ih++)
-        {
-            UCHAR val = digital_image[iw][ih];
-
-            for (UCHAR i = 0; i < 3; i++)
-            {
-                analog_image[iw][ih][i] = val;
-            }
-        }
-    }
-}
 void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], node_t **points_head)
 {
     node_t *tmp = *points_head;
@@ -103,30 +79,44 @@ void addMarkersToAnalogImage(UCHAR image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], n
     }
 }
 
-UCHAR getMean(UCHAR rbgValues[])
+void digitalToAnalog(UCHAR digital_image[BMP_WIDTH][BMP_HEIGTH],
+                     UCHAR analog_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
-    int sum = 0;
+    for (int iw = 0; iw < BMP_WIDTH; iw++)
+    {
+        for (int ih = 0; ih < BMP_HEIGTH; ih++)
+        {
+            UCHAR val = digital_image[iw][ih];
 
-    /*
-    This is faster than initialize a for loop
-    */
-    sum += rbgValues[0];
-    sum += rbgValues[1];
-    sum += rbgValues[2];
-
-    return sum >> 2;
+            for (UCHAR i = 0; i < 3; i++)
+            {
+                analog_image[iw][ih][i] = val;
+            }
+        }
+    }
 }
 
-UCHAR compareThreshold(UCHAR val)
+UCHAR compareStaticThreshold(UCHAR val)
 {
     return val < GRAYSCALE_THRESHOLD ? 0 : 255;
 }
 
-UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
+UCHAR compareDynamicThreshold(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
 {
+    //if pixel is on the edge, then just use the static threshold
     if (iw == 0 || iw == BMP_WIDTH - 1 || ih == 0 || ih == BMP_HEIGTH)
     {
-        return compareThreshold(image[iw][ih]);
+        return compareStaticThreshold(image[iw][ih]);
+    }
+
+    //if the pixel value is outside the limits then skip average calculation - it will not have any effect
+    if (image[iw][ih] < OTSU_MIN)
+    {
+        return 0;
+    }
+    if (image[iw][ih] >= OTSU_MAX)
+    {
+        return 255;
     }
 
     int sum = 0;
@@ -143,10 +133,10 @@ UCHAR compareThreshold2(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
     sum += image[iw + 1][ih - 1];
     sum += image[iw + 1][ih + 1];
 
-    int avr = sum / 8;
+    int avr = sum >> 3; //divide by 8
 
-    avr=(avr < OTSU_MIN)?OTSU_MIN:avr;
-    avr=(avr >= OTSU_MAX)?OTSU_MAX:avr;
+    avr = (avr < OTSU_MIN) ? OTSU_MIN : avr;
+    avr = (avr >= OTSU_MAX) ? OTSU_MAX : avr;
 
     return image[iw][ih] <= avr ? 0 : 255;
 }
