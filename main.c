@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
             nextState = EXIT;
             break;
 
+        //Only for debugging
         case PRINT_ERODE_IMAGE:
             sprintf(str, "erode_%d.bmp", erodeCnt++);
             digitalToAnalog(digi_buffer_0, output_image);
