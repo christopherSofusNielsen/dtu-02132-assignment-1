@@ -20,6 +20,7 @@ void detectCells(UCHAR image[BMP_WIDTH][BMP_HEIGTH], node_t **points_head)
                 BOOL haveCell = searchBox(image, iw, ih);
                 if (haveCell == TRUE)
                 {
+                    //if cell detected then add to linked list
                     tmp = create_new_node(iw, ih);
                     insert_at_head(points_head, tmp);
                 }
@@ -28,43 +29,25 @@ void detectCells(UCHAR image[BMP_WIDTH][BMP_HEIGTH], node_t **points_head)
     }
 }
 
-// //true if found cell
-// BOOL searchForCell(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih){
-//     BOOL result=FALSE;
-//     //loop for inc radius
-//     for (UCHAR radius = CELL_SEARCH_RADIUS_START; radius < CELL_SEARCH_RADIUS; radius++)
-//     {
-//         //top
-
-//         BOOL top=cheackRowForWhite(image, ih-radius, iw-radius, iw+radius);
-//         BOOL bottom=cheackRowForWhite(image, ih+radius, iw-radius, iw+radius);
-//         BOOL left=cheackColForWhite(image, iw-radius, ih-radius, ih+radius);
-//         BOOL right=cheackColForWhite(image, iw+radius, ih-radius, ih+radius);
-
-//         if(top==FALSE && bottom==FALSE && left==FALSE && right==FALSE){
-//             result=TRUE;
-//             makeBlack(image, radius, iw, ih);
-//             break;
-//         }
-//     }
-//     return result;
-// }
-
 BOOL searchBox(UCHAR image[BMP_WIDTH][BMP_HEIGTH], int iw, int ih)
 {
     int radius = CELL_DETECT_BOX_SIZE;
+    //TOP
     if (cheackRowForWhite(image, ih - radius, iw - radius, iw + radius))
     {
         return FALSE;
     }
+    //Bottom
     if (cheackRowForWhite(image, ih + radius, iw - radius, iw + radius))
     {
         return FALSE;
     }
+    //LEFT
     if (cheackColForWhite(image, iw - radius, ih - radius, ih + radius))
     {
         return FALSE;
     }
+    //RIGHT
     if (cheackColForWhite(image, iw + radius, ih - radius, ih + radius))
     {
         return FALSE;
