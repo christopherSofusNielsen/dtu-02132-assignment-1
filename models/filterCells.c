@@ -7,6 +7,7 @@ void filterPoints(node_t **points_head)
 {
     node_t *tmp = *points_head;
 
+    //loop through all points to the tail of the list
     while (tmp != NULL)
     {
         comparePoint(&tmp);
@@ -31,11 +32,13 @@ void comparePoint(node_t **point)
     node_t *prev = *point;
     node_t *tmp = (*point)->next;
 
+    //compare to all points after this point in the list
     while (tmp != NULL)
     {
         int x = tmp->x;
         int y = tmp->y;
 
+        //Will stop checking conditions first time one is false
         if (x_min <= x && x <= x_max && y_min <= y && y <= y_max && comparePointToCircularBounds(x0, y0, x, y) != 0)
         {
 
@@ -50,6 +53,7 @@ void comparePoint(node_t **point)
         }
         else
         {
+            //go to next point
             prev = prev->next;
             tmp = tmp->next;
         }
@@ -72,6 +76,7 @@ void comparePoint(node_t **point)
 
 UCHAR comparePointToCircularBounds(int x0, int y0, int x, int y)
 {
+    //calc distance with Pythagoras
     double r = sqrt(pow((x0 - x), 2) + pow((y0 - y), 2));
     return r <= (double)RADIUS;
     ;
